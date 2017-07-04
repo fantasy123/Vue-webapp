@@ -21,6 +21,37 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 var proxyTable = config.dev.proxyTable
 
 var app = express()
+//----------------------------------------------------------------------------------------------------------------------
+var appData = require('../data.json')//获得data对象
+var seller = appData.seller//商家对象
+var goods = appData.goods//商品对象
+var ratings = appData.ratings//评论对象
+
+var apiRoutes = express.Router()
+
+apiRoutes.get('/seller',function (req,res) {
+  res.json({  //服务端吐数据到客户端
+    errno:0,//表示成功
+    data:seller
+  })
+})
+
+apiRoutes.get('/goods',function (req,res) {
+  res.json({
+    errno:0,
+    data:goods
+  })
+})
+
+apiRoutes.get('/ratings',function (req,res) {
+  res.json({
+    errno:0,
+    data:ratings
+  })
+})
+
+app.use('/api',apiRoutes)//path
+//----------------------------------------------------------------------------------------------------------------------
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
