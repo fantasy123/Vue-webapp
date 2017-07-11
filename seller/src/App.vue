@@ -1,29 +1,35 @@
 <template>
   <div id="app">
-    <!--<img src="./assets/logo.png">-->
-    <hello></hello>
-    <!--App被main.js引用  hello被app.vue引用-->
+    <v-header></v-header>
+    <div class="tab">
+      <div class="tab-item">商品</div>
+      <div class="tab-item">评论</div>
+      <div class="tab-item">商家</div>
+    </div>
+    <div class="content">
+      我是内容
+    </div>
   </div>
 </template>
 
 <script>
-  import Hello from './components/Hello'
+  import header from './components/header/header.vue';
 
-  export default {  // 暴露App组件给main.js
-    name: 'app',
+  export default {
     components: {
-      Hello // 注册才能在template里写hello标签
+      'v-header': header
     }
-  }
+  };
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="stylus" rel="stylesheet/stylus">
+  #app
+    .tab
+      display: flex
+      height: 40px
+      line-height: 40px
+      .tab-item
+        flex:1
+        text-align center
 </style>
+
