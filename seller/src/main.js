@@ -8,6 +8,9 @@ import goods from 'components/goods/goods';
 import ratings from 'components/ratings/ratings';
 import seller from 'components/seller/seller';
 
+// 引入全局出口样式,webpack特性,可以在JS里依赖样式,从而加载公共样式
+import 'common/stylus/index.styl';
+
 Vue.use(VueRouter);// 安装这个插件
 
 // 定义路由 实例化router
