@@ -37,6 +37,7 @@
       flex:1
       text-align center
       &>a
+        display: block
         font-size: 14px
         color: rgb(77,85,93)
         &.active

@@ -8,11 +8,11 @@ import goods from 'components/goods/goods';
 import ratings from 'components/ratings/ratings';
 import seller from 'components/seller/seller';
 
-Vue.use(VueRouter);
+Vue.use(VueRouter);// 安装这个插件
 
 // 定义路由 实例化router
 var router = new VueRouter({
-  routes: [
+  routes: [// 取代map
     {path: '/goods', component: goods},
     {path: '/ratings', component: ratings},
     {path: '/seller', component: seller}
