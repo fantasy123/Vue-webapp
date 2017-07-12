@@ -1,19 +1,25 @@
 <template>
-  <div id="app">
+  <div>
     <v-header></v-header>
     <div class="tab">
-      <div class="tab-item">商品</div>
-      <div class="tab-item">评论</div>
-      <div class="tab-item">商家</div>
+      <div class="tab-item">
+        <router-link to="/goods">商品</router-link>
+      </div>
+      <div class="tab-item">
+        <router-link to="/ratings">评论</router-link>
+      </div>
+      <div class="tab-item">
+        <router-link to="/seller">商家</router-link>
+      </div>
     </div>
-    <div class="content">
-      我是内容
-    </div>
+
+    <!--路由外链-->
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-  import header from './components/header/header.vue';
+  import header from 'components/header/header.vue';
 
   export default {
     components: {
@@ -23,13 +29,17 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-  #app
-    .tab
-      display: flex
-      height: 40px
-      line-height: 40px
-      .tab-item
-        flex:1
-        text-align center
+  .tab
+    display: flex
+    height: 40px
+    line-height: 40px
+    .tab-item
+      flex:1
+      text-align center
+      &>a
+        font-size: 14px
+        color: rgb(77,85,93)
+        &.active
+          color:rgb(240,20,20)
 </style>
 

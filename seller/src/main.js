@@ -1,12 +1,33 @@
 // 项目入口JS,用于向index里动态插入资源
 import Vue from 'vue';// 全局依赖Vue
-import App from './App'; // 页面根元素#app的模板
+import VueRouter from 'vue-router';
+import App from './App';
 
-Vue.config.productionTip = false;
+// 引入三个组件
+import goods from 'components/goods/goods';
+import ratings from 'components/ratings/ratings';
+import seller from 'components/seller/seller';
+
+Vue.use(VueRouter);
+
+// 定义路由 实例化router
+var router = new VueRouter({
+  routes: [
+    {path: '/goods', component: goods},
+    {path: '/ratings', component: ratings},
+    {path: '/seller', component: seller}
+  ],
+  linkActiveClass: 'active'
+});
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app', // 页面容器
-  template: '<App/>', // 等价于直接在index里写<App></App>
-  components: { App }// 注册App这个组件 使得index里可以直接用<App></App>
+  el: '#app',
+  router: router,
+  components: { App },
+  template: '<App/>'
 });
+
+router.push('/goods');
+
+Vue.config.productionTip = false;
