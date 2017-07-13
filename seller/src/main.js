@@ -1,6 +1,7 @@
 // 项目入口JS,用于向index里动态插入资源
 import Vue from 'vue';// 全局依赖Vue
 import VueRouter from 'vue-router';
+import VueResource from 'vue-resource';
 import App from './App';
 
 // 引入三个组件
@@ -12,6 +13,7 @@ import seller from 'components/seller/seller';
 import 'common/stylus/index.styl';
 
 Vue.use(VueRouter);// 安装这个插件
+Vue.use(VueResource);// 全局注册
 
 // 定义路由 实例化router
 var router = new VueRouter({

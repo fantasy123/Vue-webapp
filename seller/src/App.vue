@@ -18,10 +18,27 @@
   </div>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
   import header from 'components/header/header.vue';
 
+  const ERR_OK = 0;
+
   export default {
+    data() { // data必须是函数
+        return {
+            seller: {} // 给app.vue定义一个seller对象来接收ajax返回值并传递给子组件供其渲染
+        };
+    },
+    created() { // Vue生命周期
+      this.$http.get('/api/seller').then((response) => { // 通过header组件的父组件App来发送ajax请求,再通过prop传递给header mock数据一定会成功,所以只写成功回调
+          response = response.body; // 要转化成对象的形式
+
+          if (response.errno === ERR_OK) {
+              this.seller = response.data;
+              console.log(this.seller);
+          }
+      });
+    },
     components: {
       'v-header': header
     }
