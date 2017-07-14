@@ -18,12 +18,12 @@
           <span class="text">{{seller.supports[0].description}}</span>
         </div>
       </div>
-      <div v-if="seller.supports" class="support-count">
+      <div v-if="seller.supports" class="support-count" @click="showDetail">
         <span class="count">{{seller.supports.length}}个</span>
         <i class="icon-keyboard_arrow_right"></i>
       </div>
     </div>
-    <div class="bulletin-wrapper">
+    <div class="bulletin-wrapper" @click="showDetail">
       <span class="bulletin-title"></span><span class="bulletin-text">{{seller.bulletin}}</span>
       <i class="icon-keyboard_arrow_right"></i>
     </div>
@@ -32,18 +32,76 @@
       <img :src="seller.avatar" width="100%" height="100%">
       <!--图片占满background父容器-->
     </div>
+    <!--用一个transition标签把要过渡的元素包起来(Vue 2.0的做法)-->
+    <transition name="fade">
+      <div v-show="detailShow" class="detail">
+        <!--内容层-->
+        <div class="detail-wrapper clearfix">
+          <!--真实内容-->
+          <div class="detail-main">
+            <h1 class="name">{{seller.name}}</h1>
+            <div class="star-wrapper">
+              <star :size="48" :score="seller.score"></star>
+            </div>
+            <div class="title">
+              <div class="line"></div>
+              <div class="text">优惠信息</div>
+              <div class="line"></div>
+            </div>
+            <ul v-if="seller.supports" class="supports">
+              <li v-for="item in seller.supports" class="support-item">
+                <span class="icon" :class="classMap[item.type]"></span>
+                <span class="text">{{item.description}}</span>
+              </li>
+            </ul>
+            <div class="title">
+              <div class="line"></div>
+              <div class="text">商家公告</div>
+              <div class="line"></div>
+            </div>
+            <div class="bulletin">
+              <p class="content">
+                {{seller.bulletin}}
+              </p>
+            </div>
+          </div>
+        </div>
+        <!--固定在底部的层-->
+        <div class="detail-close">
+          <i class="icon-close" @click="hideDetail"></i>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import star from 'components/star/star';
+
   export default {  // 接收父组件传来的seller对象
     props: {
       seller: {
         type: Object
       }
     },
+    data() {
+        return {
+            detailShow: false
+        };
+    },
+    methods: {
+      showDetail: function () {
+        this.detailShow = true;
+      },
+      hideDetail: function () {
+        this.detailShow = false;
+      }
+    },
     created() { // 一旦组件初始化完毕,就给组件全局赋一个索引-类名数组
         this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+    },
+    components: {
+        star
     }
   };
 </script>
@@ -55,6 +113,7 @@
     position: relative
     color: #fff
     background:rgba(7,17,27,.5)// 半透明背景和模糊的background层叠加显示
+    overflow: hidden
     .content-wrapper
       position: relative
       font-size: 0
@@ -142,7 +201,7 @@
         background-size: 22px 12px
         background-repeat: no-repeat
         vertical-align:top
-        margin-top: 7px
+        margin-top: 8px
       .bulletin-text
         font-size: 10px
         margin:0 4px
@@ -160,4 +219,93 @@
       height: 100%
       z-index: -1
       filter: blur(10px)
+    .detail
+      position: fixed
+      left: 0
+      top: 0
+      width: 100%
+      height: 100%
+      overflow: auto // 需要滚动条
+      z-index 100
+      background: rgba(7,17,27,0.8)
+      /*IOS 特有属性 渐进增强*/
+      backdrop-filter: blur(10px)
+      .detail-wrapper
+        width: 100%
+        min-height: 100%
+        .detail-main
+          margin-top: 64px
+          padding-bottom: 64px // 为叉叉让位
+          .name
+            font-size: 16px
+            line-height: 16px
+            text-align: center
+            font-weight: 700
+          .star-wrapper
+            margin-top: 18px
+            padding: 2px 0
+            text-align: center
+          .title
+            display: flex
+            width: 80%
+            margin: 28px auto 24px auto
+            .line
+              position: relative
+              top: -6px
+              flex: 1
+              border-bottom: 1px solid rgba(255,255,255,0.2)
+            .text
+              font-size: 14px
+              padding: 0 12px
+              font-weight: 700
+
+          .supports
+            width: 80%
+            margin: 0 auto
+            .support-item
+              padding: 0 12px
+              margin-bottom: 12px
+              font-size: 0
+              &:last-child
+                margin-bottom: 0
+              .icon
+                display: inline-block
+                width: 16px
+                height: 16px
+                vertical-align: top
+                margin-right: 6px
+                background-size: 16px 16px
+                background-repeat: no-repeat
+                &.decrease
+                  bg-image('decrease_2')
+                &.discount
+                  bg-image('discount_2')
+                &.guarantee
+                  bg-image('guarantee_2')
+                &.invoice
+                  bg-image('invoice_2')
+                &.special
+                  bg-image('special_2')
+              .text
+                line-height: 16px
+                font-size: 12px
+          .bulletin
+            width: 80%
+            margin: 0 auto
+            .content
+              padding: 0 12px
+              line-height: 24px
+              font-size: 12px
+      .detail-close
+        position: relative
+        width: 32px
+        height: 32px
+        margin: -64px auto 0 auto
+        clear: both
+        font-size: 32px
+  // 管理detail弹层的过渡状态
+    .fade-enter-active, .fade-leave-active
+      transition: all 0.5s
+    .fade-enter, .fade-leave-to
+      opacity: 0
 </style>
