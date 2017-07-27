@@ -13,7 +13,7 @@
           {{seller.description}}/{{seller.deliveryTime}}分钟送达
         </div>
         <div v-if="seller.supports" class="support">
-          <!--因为数据是异步请求的,所以解析的时候supports这个数组可能不存在,用v-if来控制-->
+          <!--数据是异步请求的,数据没有到位时,DOM也不会显示-->
           <span class="icon" :class="classMap[seller.supports[0].type]"></span>
           <span class="text">{{seller.supports[0].description}}</span>
         </div>
@@ -32,7 +32,7 @@
       <img :src="seller.avatar" width="100%" height="100%">
       <!--图片占满background父容器-->
     </div>
-    <!--用一个transition标签把要过渡的元素包起来(Vue 2.0的做法)-->
+    <!--用transition标签把要过渡的元素包起来(Vue 2.0的做法)-->
     <transition name="fade">
       <div v-show="detailShow" class="detail">
         <!--内容层-->
@@ -51,6 +51,7 @@
             <ul v-if="seller.supports" class="supports">
               <li v-for="item in seller.supports" class="support-item">
                 <span class="icon" :class="classMap[item.type]"></span>
+                <!--item是对象数组seller.supports里的对象,第一个键type是索引。classMap是索引-类名数组,不同的类名对应不同的icon背景图-->
                 <span class="text">{{item.description}}</span>
               </li>
             </ul>
@@ -97,10 +98,10 @@
         this.detailShow = false;
       }
     },
-    created() { // 一旦组件初始化完毕,就给组件全局赋一个索引-类名数组
+    created() { // 组件初始化完毕,在全局定义一个索引-类名数组
         this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
     },
-    components: {
+    components: { // 注册组件
         star
     }
   };
