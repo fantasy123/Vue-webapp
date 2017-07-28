@@ -1,13 +1,17 @@
-border-1px($clr)
-  position: relative
-  &:after
+border-1px($clr)  // 解决了手机端border粗细是PC端2倍的问题
+  position: relative  // 自己相对定位
+  &:after // 伪元素绝对定位
     display: block
     position: absolute
     left: 0
     bottom: 0
-    width: 100%
-    border-top:1px solid $clr;
+    width: 100% // 定到底部撑满 要推开用padding-bottom
+    border-top:1px solid $clr;  // 由元素的border变成伪元素的border
     content :' ';
+
+border-none()
+  &:after
+    display: none
 
 bg-image($url)
   background-image: url($url + "@2x.png")
