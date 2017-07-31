@@ -42,11 +42,13 @@
       </ul>
     </div>
     <!--绑定在一般元素上,ref指DOM.绑定在组件上时,ref为一组件实例-->
+    <shopcart></shopcart>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';  // npm安装的模块不用写相对路径
+  import shopcart from 'components/shopcart/shopcart';  // 自己写的组件要写相对路径 components可以直接用别名
 
   const ERR_OK = 0;
 
@@ -132,6 +134,9 @@
               this.listHeight.push(height); // 不断获取递增的height,高度递增的区间数组构造完毕
             }
           }
+      },
+      components: {
+          shopcart
       }
   };
 </script>
