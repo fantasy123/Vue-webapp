@@ -42,7 +42,8 @@
       </ul>
     </div>
     <!--绑定在一般元素上,ref指DOM.绑定在组件上时,ref为一组件实例-->
-    <shopcart></shopcart>
+    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <!--父组件 <router-view> 把seller传给goods组件,goods组件再读取seller里的配送费和起送价传递给它的子组件shopcart-->
   </div>
 </template>
 
