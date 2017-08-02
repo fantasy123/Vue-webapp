@@ -35,6 +35,11 @@
                   <span class="now">¥{{food.price}}</span>
                   <span v-if="food.oldPrice" class="old">{{food.oldPrice}}</span>
                 </div>
+                <div class="cartcontrol-wrapper">
+                  <!--组件负责外观,wrapper负责定位-->
+                  <cartcontrol :food="food"></cartcontrol>
+                </div>
+                <!--相对于content定位在右下角-->
               </div>
             </li>
           </ul>
@@ -42,7 +47,7 @@
       </ul>
     </div>
     <!--绑定在一般元素上,ref指DOM.绑定在组件上时,ref为一组件实例-->
-    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice" :selectFoods="selectedFoods"></shopcart>
     <!--父组件 <router-view> 把seller传给goods组件,goods组件再读取seller里的配送费和起送价传递给它的子组件shopcart-->
   </div>
 </template>
@@ -50,6 +55,7 @@
 <script type="text/ecmascript-6">
   import BScroll from 'better-scroll';  // npm安装的模块不用写相对路径
   import shopcart from 'components/shopcart/shopcart';  // 自己写的组件要写相对路径 components可以直接用别名
+  import cartcontrol from 'components/cartcontrol/cartcontrol';
 
   const ERR_OK = 0;
 
@@ -80,6 +86,19 @@
             }
 
             return 0;
+        },
+        selectedFoods() { // cartcontrol 为每一个food添加并操作count属性(Vue.set) => selectedFoods重新计算 => selectedFoods下放到shopcart组件
+            let foodsList = [];
+
+            this.goods.forEach((good) => {  // goods组件里全局监测的只有goods这个变量 遍历它拿到下面的东西
+                good.foods.forEach((food) => {
+                    if (food.count) { // cartcontrol操作之后 如果该food有数目 那么就是被选中的食物 把该food对象推入selectedFoods
+                        foodsList.push(food);
+                    }
+                });
+            });
+
+            return foodsList;
         }
       },
       created () {  // hook
@@ -113,10 +132,11 @@
           },
           _initScroll: function() {
             this.menuScroll = new BScroll(this.$refs.menuWrapper, {
-                click: true
+                click: true // 使用了BS插件 只识别触摸事件 click置为true才能识别点击事件
             });
             this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
-                probeType: 3
+                probeType: 3,
+                click: true
             }); // BS的接口 用来实时获取scroll列表的实时位置 起到一个探侦的效果
 
             this.foodsScroll.on('scroll', (pos) => {  // 给右侧食品列表绑定滚动事件,获取它的纵坐标
@@ -137,7 +157,8 @@
           }
       },
       components: {
-          shopcart
+          shopcart,
+          cartcontrol
       }
   };
 </script>
@@ -218,6 +239,7 @@
             width: 57px // 和右侧的content构成flex布局 宽度和内部的img(宽高写在标签里)一样 高度由右边的content决定(flex左右等高)
             margin-right: 10px
           .content
+            position: relative
             flex: 1
             .name
               margin: 2px 0 8px 0
@@ -246,4 +268,8 @@
                 text-decoration: line-through
                 font-size: 10px
                 color: rgb(147,153,159)
+            .cartcontrol-wrapper  // 为数目控件定位 数目控件外观的样式写在cartcontrol里
+              position: absolute
+              right: 0
+              bottom: 0
 </style>

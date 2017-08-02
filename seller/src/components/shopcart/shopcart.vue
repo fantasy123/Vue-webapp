@@ -26,7 +26,8 @@
 <script type="text/ecmascript-6">
   export default {
       props: {
-        selectFoods: {  // 在父元素foods中选择之后 属性下放而来
+        selectFoods: {  // 在父组件goods中:通过cartcontrol操作food的count属性 => 计算属性selectedFoods也产生了变化
+          //  => 把selectedFoods下放到shopcart子组件进而填充购物车的数据、影响购物车的状态 (目前我们使用假数据来进行填充)
           // 这个数据保存了我们选择的商品数组 每个商品(food)又包含数目和单价这2个字段 这个数据是很多插值的计算依据
             type: Array,
             default() { // 在vue里 当props是一个数组或对象时 default就需要是一个函数
