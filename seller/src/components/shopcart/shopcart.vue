@@ -20,35 +20,11 @@
         </div>
       </div>
     </div>
-    <div class="ball-container">
-      <transition name="drop">
-        <!--外层管水平方向移动-->
-        <div class="ball" v-for="ball in balls" v-if="ball.show">
-          <!--内层管垂直方向-->
-          <div class="inner"></div>
-        </div>
-      </transition>
-    </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   export default {
-      data() {
-          return {
-              balls: [
-                {
-                    show: false  // 每个小球先隐藏
-                },
-                {
-                    show: false
-                },
-                {
-                    show: false
-                }
-              ]
-          };
-      },
       props: {
         selectFoods: {  // 在父组件goods中:通过cartcontrol操作food的count属性 => 计算属性selectedFoods也产生了变化
           //  => 把selectedFoods下放到shopcart子组件进而填充购物车的数据、影响购物车的状态 (目前我们使用假数据来进行填充)
@@ -203,18 +179,4 @@
           &.enough
             background: #00b43c
             color: #fff
-    .ball-container
-      .ball
-        position: fixed
-        left: 32px
-        bottom: 22px  // 小球的最终位置
-        z-index: 200
-        &.drop-transition
-          transition: all 0.4s
-          .inner
-            width: 16px
-            height: 16px
-            border-radius: 50%
-            background: rgb(0,160,220)
-            transition: all 0.4s
 </style>
