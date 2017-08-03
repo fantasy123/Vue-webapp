@@ -20,10 +20,32 @@
         </div>
       </div>
     </div>
+    <div class="shopcart-list">
+      <div class="list-header">
+        <h1 class="title">购物车</h1>
+        <span class="empty">清空</span>
+      </div>
+      <div class="list-content">
+        <ul>
+          <!--和底部购物车状态条依赖同一个数据结构-->
+          <li class="food" v-for="food in selectFoods">
+            <span class="name">{{food.name}}</span>
+            <div class="price">
+              <span>¥{{food.price}}</span>
+            </div>
+            <div class="cartcontrol-wrapper">
+              <cartcontrol :food="food"></cartcontrol>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import cartcontrol from 'components/cartcontrol/cartcontrol';
+
   export default {
       props: {
         selectFoods: {  // 在父组件goods中:通过cartcontrol操作food的count属性 => 计算属性selectedFoods也产生了变化
@@ -88,6 +110,9 @@
                   return 'enough';
               }
           }
+      },
+      components: {
+        cartcontrol
       }
   };
 </script>
