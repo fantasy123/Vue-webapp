@@ -1,50 +1,61 @@
 <template>
-  <div class="shopcart">
-    <div class="content">
-      <div class="content-l">
-        <div class="logo-wrapper">
-          <div class="logo" :class="{'highlight':totalCount>0}">
-            <i class="icon-shopping_cart" :class="{'highlight':totalCount>0}"></i>
+  <div>
+    <div class="shopcart">
+      <div class="content" @click="toggleList">
+        <div class="content-l">
+          <div class="logo-wrapper">
+            <div class="logo" :class="{'highlight':totalCount>0}">
+              <i class="icon-shopping_cart" :class="{'highlight':totalCount>0}"></i>
+            </div>
+            <div class="num" v-if="totalCount>0">
+              {{totalCount}}
+            </div>
           </div>
-          <div class="num" v-if="totalCount>0">
-            {{totalCount}}
+          <div class="price" :class="{'highlight':totalPrice>0}">¥{{totalPrice}}</div>
+          <div class="desc">另需配送费¥{{deliveryPrice}}元</div>
+          <!--这些数据的动态展示依赖于选择了多少商品 在goods组件中选择了之后再下放到shopcart组件(props down)来做插值或计算(computed)-->
+        </div>
+        <div class="content-r" @click.stop.prevent="pay">
+          <div class="pay" :class="payClass">
+            {{payDesc}}
           </div>
         </div>
-        <div class="price" :class="{'highlight':totalPrice>0}">¥{{totalPrice}}</div>
-        <div class="desc">另需配送费¥{{deliveryPrice}}元</div>
-        <!--这些数据的动态展示依赖于选择了多少商品 在goods组件中选择了之后再下放到shopcart组件(props down)来做插值或计算(computed)-->
       </div>
-      <div class="content-r">
-        <div class="pay" :class="payClass">
-          {{payDesc}}
+
+      <transition name="fold">
+        <div class="shopcart-list" v-show="listShow">
+          <!--listShow是一个计算属性,根据是否有内容,是否折叠计算得出-->
+          <div class="list-header">
+            <h1 class="title">购物车</h1>
+            <span class="empty" @click="empty">清空</span>
+          </div>
+          <div class="list-content" ref="listContent">
+            <ul>
+              <!--和底部购物车状态条依赖同一个数据结构-->
+              <li class="food border-1px" v-for="food in selectFoods">
+                <!--点击cartcontrol,改变food.count,满足food.count>0的food推入selectFoods,然后遍历selectFoods填充list-content-->
+                <span class="name">{{food.name}}</span>
+                <div class="price">
+                  <span>¥{{food.price*food.count}}</span>
+                </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food"></cartcontrol>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </transition>
     </div>
-    <div class="shopcart-list">
-      <div class="list-header">
-        <h1 class="title">购物车</h1>
-        <span class="empty">清空</span>
-      </div>
-      <div class="list-content">
-        <ul>
-          <!--和底部购物车状态条依赖同一个数据结构-->
-          <li class="food" v-for="food in selectFoods">
-            <span class="name">{{food.name}}</span>
-            <div class="price">
-              <span>¥{{food.price}}</span>
-            </div>
-            <div class="cartcontrol-wrapper">
-              <cartcontrol :food="food"></cartcontrol>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <transition name="fade">
+      <div class="list-mask" v-show="listShow" @click="hideList"></div>
+    </transition>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import cartcontrol from 'components/cartcontrol/cartcontrol';
+  import cartcontrol from 'components/cartcontrol/cartcontrol'; // 这是组件 需要注册
+  import BScroll from 'better-scroll';  // 这是插件 不需要注册
 
   export default {
       props: {
@@ -73,6 +84,11 @@
             type: Number,
             default: 0
         }
+      },
+      data() {
+        return {
+          fold: true // 默认折叠
+        };
       },
       computed: {
           totalPrice() {
@@ -109,15 +125,66 @@
               } else {
                   return 'enough';
               }
+          },
+          listShow() {
+              // 先考虑没有商品的情况
+              if (!this.totalCount) {
+                  this.fold = true;
+                  return false; // 不显示
+              }
+
+              // 有商品
+              let show = !this.fold;
+
+              // 在商品弹层显示的时候调用BS初始化
+              if (show) {
+                this.$nextTick(() => {  // better-scroll严重依赖DOM
+                  if (!this.scroll) {
+                    this.scroll = new BScroll(this.$refs.listContent, {
+                      click: true // 使listContent超出滚动,cartcontrol允许点击 food.count=>food=>selectedFoods=>填充
+                    });
+                  } else {  // 如果scroll已经创建 那么只要刷新一下
+                    this.scroll.refresh();  // 重新计算视口和内容的高度 决定是否滚动
+                  }
+                });
+              }
+
+              return show;
           }
       },
       components: {
         cartcontrol
+      },
+      methods: {
+          toggleList: function () {
+            // 没有商品
+            if (!this.totalCount) {
+              return;
+            }
+            // 有商品
+            this.fold = !this.fold;
+          },
+          empty: function () {
+            this.selectFoods.forEach((food) => {
+                food.count = 0;
+            });
+          },
+          hideList: function () {
+            this.fold = true;
+          },
+          pay: function () {
+            if (this.totalPrice < this.minPrice) {
+                return;
+            }
+            alert(`支付${this.totalPrice}元`);
+          }
       }
   };
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
+  @import "../../common/stylus/mixin"
+
   .shopcart
     position: fixed
     left: 0
@@ -204,4 +271,71 @@
           &.enough
             background: #00b43c
             color: #fff
+    .shopcart-list
+      position: absolute
+      left: 0
+      top: 0
+      width: 100%
+      z-index: -1 // 从下面展开
+      transform: translate3D(0,-100%,0);  // 默认状态:运动到下方(官网的例子省略了opacity:1)
+      .list-header
+        height: 40px
+        line-height: 40px
+        padding:0 18px
+        background: #f3f5f7
+        border-bottom: 1px solid rgba(7,17,27,0.1)
+        .title
+          float: left
+          font-size: 14px
+          color: rgb(7,17,27)
+        .empty
+          float: right
+          font-size: 12px
+          color: rgb(0,160,220)
+      .list-content
+        padding: 0 18px
+        max-height: 217px // 超出就滚动
+        overflow: hidden
+        background: #fff
+        .food
+          position: relative
+          padding: 12px 0
+          box-sizing: border-box
+          border-1px: rgba(7,17,27,0.1)
+          .name
+            font-size: 14px
+            line-height: 24px
+            color: rgb(7,17,27)
+          .price
+            position: absolute
+            right: 90px
+            bottom: 12px
+            font-size: 14px
+            line-height: 24px
+            font-weight: 700
+            color: rgb(240,20,20)
+          .cartcontrol-wrapper
+            position: absolute
+            right: 0
+            bottom: 5px
+    .fold-enter-active, .fold-leave-active  // 只写过渡
+      transition: all .5s
+    .fold-enter, .fold-leave-to   // 最终状态
+      transform: translate3D(0,0,0);
+  .list-mask
+    position: fixed
+    left: 0
+    top: 0
+    width: 100%
+    height: 100%  // 撑满
+    z-index: 40 // 层级比shopcart低
+    backdrop-filter: blur(10px) // IOS模糊
+
+    opacity: 1
+    background: rgba(7,17,27,0.6)
+  .fade-enter-active, .fade-leave-active
+    transition: all .5s
+  .fade-enter, .fade-leave-to
+    opacity: 0
+    background: rgba(7,17,27,0)
 </style>
