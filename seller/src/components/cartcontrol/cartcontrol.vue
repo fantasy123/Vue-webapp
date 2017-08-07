@@ -1,13 +1,13 @@
 <template>
   <div class="cartcontrol">
     <transition name="move">
-      <div class="decrease" v-if="food.count>0" @click="decreaseCart($event)">
+      <div class="decrease" v-if="food.count>0" @click.stop.default="decreaseCart($event)">
         <i class="inner icon-remove_circle_outline"></i>
       </div>
     </transition>
     <!--左右按钮是2个字体-->
     <div class="count" v-if="food.count>0">{{food.count}}</div>
-    <div class="add icon-add_circle" @click="addCart($event)"></div>
+    <div class="add icon-add_circle" @click.stop.default="addCart($event)"></div>
   </div>
 </template>
 
