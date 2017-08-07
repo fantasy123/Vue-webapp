@@ -27,6 +27,12 @@
           </transition>
           <!--点它可以操作food.count,同时它的显示也依赖于food.count-->
         </div>
+        <split v-if="food.info"></split>
+        <!--跟下面的商品介绍是相互依存的,没有商品介绍空有一个分割线是非常奇怪的-->
+        <div class="info" v-if="food.info">
+          <h1 class="title">商品介绍</h1>
+          <p class="text">{{food.info}}</p>
+        </div>
       </div>
     </div>
   </transition>
@@ -36,6 +42,7 @@
   import BScroll from 'better-scroll';  // 这个长页面会超出屏幕高度
   import cartcontrol from 'components/cartcontrol/cartcontrol';
   import Vue from 'vue';  // 后面需要用到Vue.set方法
+  import split from 'components/split/split';
 
   export default {
       props: {
@@ -76,7 +83,8 @@
           }
       },
       components: {
-          cartcontrol
+          cartcontrol,
+          split
       }
   };
 </script>
@@ -163,6 +171,18 @@
           transition: all 0.2s
         .fade-enter, .fade-leave-to
           opacity: 0
+      .info
+        padding: 18px
+        .title
+          font-size: 14px
+          line-height: 14px
+          margin-bottom: 6px
+          color: rgb(7,17,27)
+        .text
+          font-size: 12px
+          line-height: 24px
+          padding: 0 8px
+          color: rgb(77,85,93)
   // food的缓动样式
   .move-enter-active, .move-leave-active
     transition: all 0.2s linear
