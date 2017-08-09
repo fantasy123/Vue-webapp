@@ -36,7 +36,8 @@
         <split></split>
         <div class="rating">
           <h1 class="title">商品评价</h1>
-          <ratingselect></ratingselect>
+          <ratingselect :ratings="food.ratings" :selectType="selectType" :onlyContent="onlyContent" :desc="desc"></ratingselect>
+          <!--ratings属性通过遍历得到(不是在下方定义的)-->
         </div>
       </div>
     </div>
@@ -50,6 +51,10 @@
   import split from 'components/split/split';
   import ratingselect from 'components/ratingselect/ratingselect';
 
+  //  const POSITIVE = 0;
+  //  const NEGATIVE = 1;
+  const ALL = 2;
+
   export default {
       props: {
           food: {
@@ -58,12 +63,25 @@
       },
       data() {
           return {
-            showFlag: false // 需要在data里去观测showFlag的变化
+            showFlag: false, // 需要在data里去观测showFlag的变化
+            // 挂一些对需要传给ratingselect组件props属性的变量的依赖跟踪
+            selectType: ALL,
+            onlyContent: true, // 跟子组件的默认值不同,体现改变
+            desc: { // 跟子组件的默认值不同,体现改变
+              all: '全部',
+              positive: '推荐',
+              negative: '吐槽'
+            }
+            // ratings数组读取该food的ratings属性
           };
       },
       methods: {  // 父组件可以调用子组件方法 反之则不行(这个show方法是供goods组件来调用的)
           show: function () { // 以下划线开头的方法,一般作为组件私有方法 没有下划线的方法是可能被外部调用的方法
             this.showFlag = true; // 父组件点击food列表来调用
+
+            // 食品页展现的时候初始化一些对评论区块的设置
+            this.selectType = ALL;  //  全部选择
+            this.onlyContent = true;  // 只显示有内容的评论
 
             // 这个页面被展示=>计算页面高度,初始化better-scroll
             this.$nextTick(() => {
@@ -190,6 +208,13 @@
           line-height: 24px
           padding: 0 8px
           color: rgb(77,85,93)
+      .rating
+        padding-top: 18px
+        .title
+          font-size: 14px
+          line-height: 14px
+          margin-left: 18px
+          color: rgb(7,17,27)
   // food的缓动样式
   .move-enter-active, .move-leave-active
     transition: all 0.2s linear
