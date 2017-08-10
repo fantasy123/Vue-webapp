@@ -51,8 +51,8 @@
   import split from 'components/split/split';
   import ratingselect from 'components/ratingselect/ratingselect';
 
-  //  const POSITIVE = 0;
-  //  const NEGATIVE = 1;
+  const POSITIVE = 0;
+  const NEGATIVE = 1;
   const ALL = 2;
 
   export default {
@@ -81,7 +81,7 @@
 
             // 食品页展现的时候初始化一些对评论区块的设置
             this.selectType = ALL;  //  全部选择
-            this.onlyContent = true;  // 只显示有内容的评论
+            this.onlyContent = false;  // 只显示有内容的评论
 
             // 这个页面被展示=>计算页面高度,初始化better-scroll
             this.$nextTick(() => {
