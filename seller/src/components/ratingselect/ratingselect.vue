@@ -16,6 +16,8 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import Vue from 'vue';
+
   const POSITIVE = 0;
   const NEGATIVE = 1;
   const ALL = 2;  // 这里用常量存储数字 只是为了语义化 而且只能在script标签里被识别
@@ -53,12 +55,16 @@
                 return;
           }
           this.selectType = type;
+
+          this.$emit('selectRatingType', type); // 派发selectRatingType事件向父组件传递type
         },
         toggleContent: function (event) {
           if (!event._constructed) {
             return;
           }
           this.onlyContent = !this.onlyContent; // 基础类型的改变不会影响父组件 可以派发一个事件让父组件来监听
+
+          this.$emit('toggleContent', this.onlyContent);  // 派发toggleContent事件向父组件传递this.onlyContent
         }
       },
       computed: {
