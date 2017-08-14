@@ -54,7 +54,7 @@
           if (!event._constructed) {
                 return;
           }
-          this.selectType = type;
+          this.selectType = type; // Vue2中组件的props的数据流动改为了只能单向流动 在组件内，不能修改由外层传来的props数据
 
           this.$emit('selectRatingType', type); // 派发selectRatingType事件向父组件传递type
         },
