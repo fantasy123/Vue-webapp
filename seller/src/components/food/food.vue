@@ -38,12 +38,12 @@
           <h1 class="title">商品评价</h1>
           <ratingselect :ratings="food.ratings" :selectType="selectType" :onlyContent="onlyContent" :desc="desc" v-on:selectRatingType="setRatingType" v-on:toggleContent="setBoolContent"></ratingselect>
           <!--ratings属性通过遍历得到(不是在下方定义的)-->
-          <!--父组件响应事件并用一个方法来处理它-->
+          <!--使用v-on指令 左侧是子组件抛出的事件名 右侧是父组件针对该事件响应的方法名(写在methods里)-->
           <div class="rating-wrapper">
             <ul v-show="food.ratings && food.ratings.length">
               <!--全部的列表已经遍历了一遍,只需要在遍历<li></li>的时候加一些限制条件来筛选出特定的评论-->
               <li v-for="rating in food.ratings" class="rating-item border-1px" v-show="needShow(rating.rateType,rating.text)">
-                <!--传入当前的评论类型和评论内容,来判断该条评论是显示还是隐藏-->
+                <!--&lt;!&ndash;传入当前的评论类型和评论内容,来判断该条评论是显示还是隐藏&ndash;&gt;  v-show绑定一个函数在Vue里是合法的-->
                 <div class="user">
                   <!--绝对定位-->
                   <span class="name">{{rating.username}}</span>
@@ -154,8 +154,9 @@
       },
       filters: {
           formatDate: function (time) {
-            let date = new Date(time);  // 转化为时间戳
+            let date = new Date(time);  // 把时间戳转化为Date类型的对象
             return formatDate(date, 'yyyy-MM-dd hh:mm');  // 向外部格式化函数传入时间戳和希望格式化的形式字符串
+            // 连接符不会被匹配到,也不会被替换
           }
       },
       components: {
@@ -290,7 +291,7 @@
               .avatar
                 border-radius: 50%
             .time
-              margin-bottom: 6px
+              margin-bottom: 6px  // 影响布局的样式优先
               line-height: 12px
               font-size: 10px
               color: rgb(147,153,159)
