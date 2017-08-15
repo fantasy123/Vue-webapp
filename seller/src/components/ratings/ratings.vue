@@ -1,5 +1,6 @@
 <template>
   <div class="ratings" ref="ratings">
+    <!--在容器上挂钩子-->
     <div class="ratings-content">
       <div class="overview">
         <div class="overview-l">
@@ -54,11 +55,12 @@
 </template>
 
 <script type="text/ecmascript-6">
+  // ESlint只针对JS进行校验 对模板不起作用
   import star from 'components/star/star';
   import split from 'components/split/split';
   import ratingselect from 'components/ratingselect/ratingselect';
   import BScroll from 'better-scroll';
-  import {formatDate} from 'common/js/date';
+  import {formatDate} from 'common/js/date';  // 引入date模块
 
   const POSITIVE = 0;
   const NEGATIVE = 1;
@@ -80,11 +82,12 @@
       };
     },
     created() {
-      this.$http.get('/api/ratings').then(function (response) {
+      this.$http.get('/api/ratings').then(function (response) { // vue resource的方法
         response = response.body; // 得到一个对象
         if (response.errno === ERR_OK) {
-          this.ratings = response.data;
+          this.ratings = response.data; // 用后端API返回的结果给全局变量ratings赋值
 
+          // ratings拿到 最后一块DOM => 评价列表就位 初始化better-scroll
           this.$nextTick(() => {
             if (!this.scroll) {
                   this.scroll = new BScroll(this.$refs.ratings, {
@@ -99,6 +102,7 @@
     },
     methods: {
       needShow: function (type, text) { // 筛选列表用
+        // 根据该列表项的文本内容和评论类型 结合父组件的onlyContent和selectType两个数据(跟子组件同步更新) 影响needShow的值 最终驱动列表DOM的筛选
         if (this.onlyContent && !text) {
           return false;
         } else if (this.selectType === ALL) {
@@ -107,11 +111,11 @@
           return this.selectType === type;
         }
       },
-      setRatingType: function (type) {
+      setRatingType: function (type) {  // 父组件接收到子组件的事件,设置响应函数 更新父组件的数据状态
         this.selectType = type;
 
         this.$nextTick(() => {
-          this.scroll.refresh();
+          this.scroll.refresh();  // DOM有改变就刷新BScroll
         });
       },
       setBoolContent: function (bool) {
@@ -132,7 +136,7 @@
     },
     filters: {
       formatDate: function (time) {
-        let date = new Date(time);
+        let date = new Date(time);  // 转化成Date对象
         return formatDate(date, 'yyyy-MM-dd hh:mm');
       }
     },
@@ -227,7 +231,7 @@
           width: 28px
           margin-right: 12px
           img
-            border-radius: 50%
+            border-radius: 50%  // 直接在图片上加圆角
         .content
           position: relative
           flex: 1
@@ -241,12 +245,13 @@
             margin-bottom: 6px
             .star
               display: inline-block
-              vertical-align: top
+              vertical-align: top // 文字和图片混合 需要加这两句
               margin-right: 6px
             .delivery
               display: inline-block
               vertical-align: top
               font-size: 10px
+              line-height: 12px
               color: rgb(147,153,159)
           .text
             font-size: 12px
@@ -263,7 +268,7 @@
             .icon-thumb_up
               color: rgb(0,160,220)
             .item
-              padding: 0 6px
+              padding: 0 6px  // 上下是用line-height撑开
               border: 1px solid rgba(7,17,27,0.1)
               border-radius: 1px
               background: #fff

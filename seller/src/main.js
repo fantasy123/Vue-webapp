@@ -34,6 +34,7 @@ new Vue({ // 全局Vue实例
 });
 
 // router.push('/goods'); // 无论在哪个router-view下 一旦刷新 就会调用这句 去到第一个选项卡 并移除rating组件
-// 和seller组件的DOM 再执行nextTick的时候 就找不到被移除组件的DOM了 可能会初始化失败
+// 和seller组件的DOM 再执行nextTick的时候(因为nextTick是异步执行) 就找不到被移除组件的DOM了 可能会初始化失败
+// 这句话去掉 那么在其他router-view刷新的时候不会跳转到goods里 最后上线的时候 用URL带上哈希值来访问
 
 Vue.config.productionTip = false;

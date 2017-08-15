@@ -70,7 +70,7 @@
         }
       },
       methods: {
-        select: function (type, event) {
+        select: function (type, event) {  // 修改子组件的数据 驱动子组件DOM的变化 接着把子组件数据的变化通过派发事件的方式传送给父组件
           if (!event._constructed) {
                 return;
           }
