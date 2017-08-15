@@ -149,7 +149,7 @@
         padding: 16px 12px
         font-size: 0
         border-1px(rgba(7,17,27,0.1))
-        .icon
+        .icon // 规定背景图的一些通用样式
           display: inline-block
           vertical-align: top
           width: 16px
@@ -157,7 +157,7 @@
           margin-right: 6px
           background-size:16px 16px
           background-repeat:no-repeat
-          &.decrease
+          &.decrease  // 第二个类名决定具体的URL
             bg-image('decrease_4')
           &.discount
             bg-image('discount_4')
