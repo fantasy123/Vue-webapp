@@ -1,5 +1,5 @@
 <template>
-  <div class="seller">
+  <div class="seller" ref="seller">
     <div class="seller-content">
       <div class="overview">
         <h1 class="title">{{seller.name}}</h1>
@@ -30,12 +30,28 @@
           </li>
         </ul>
       </div>
+      <split></split>
+      <div class="bulletin">
+        <h1 class="title">公告与活动</h1>
+        <div class="content-wrapper border-1px">
+          <p class="content">{{seller.bulletin}}</p>
+        </div>
+      </div>
+      <ul v-if="seller.supports" class="supports">
+        <li v-for="item in seller.supports" class="support-item border-1px">
+          <span class="icon" :class="classMap[item.type]"></span>
+          <!--item是对象数组seller.supports里的对象,第一个键type是索引。classMap是索引-类名数组,不同的类名对应不同的icon背景图-->
+          <span class="text">{{item.description}}</span>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import star from 'components/star/star';
+  import split from 'components/split/split';
+  import BScroll from 'better-scroll';
 
   export default {
     props: {
@@ -43,8 +59,18 @@
         type: Object
       }
     },
+    created() {
+      this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee']; // 索引-类名数组
+
+      this.$nextTick(() => {
+        this.scroll = new BScroll(this.$refs.seller, {
+          click: true
+        });
+      });
+    },
     components: {
-      star
+      star,
+      split
     }
   };
 </script>
@@ -67,7 +93,6 @@
         color: rgb(7,17,27)
       .desc
         padding-bottom: 18px
-        line-height: 18px
         font-size: 0
         border-1px(rgba(7,17,27,0.1))
         .star
@@ -80,6 +105,7 @@
           display: inline-block
           vertical-align: top
           margin-right: 12px
+          line-height: 18px
           font-size: 10px
           color: rgb(77,85,93)
       .remark
@@ -103,4 +129,46 @@
               font-size: 24px
           &:last-child
             border-right:none
+    .bulletin
+      padding: 18px 18px 0 18px
+      .title
+        font-size: 14px
+        margin-bottom: 8px
+        line-height: 14px
+        color: rgb(7,17,27)
+      .content-wrapper
+        padding: 0 12px 16px 12px
+        border-1px(rgba(7,17,27,0.1))
+        .content
+          line-height: 24px
+          font-size: 12px
+          color: rgb(240,20,20)
+    .supports
+      padding: 0 18px
+      .support-item
+        padding: 16px 12px
+        font-size: 0
+        border-1px(rgba(7,17,27,0.1))
+        .icon
+          display: inline-block
+          vertical-align: top
+          width: 16px
+          height: 16px
+          margin-right: 6px
+          background-size:16px 16px
+          background-repeat:no-repeat
+          &.decrease
+            bg-image('decrease_4')
+          &.discount
+            bg-image('discount_4')
+          &.guarantee
+            bg-image('guarantee_4')
+          &.invoice
+            bg-image('invoice_4')
+          &.special
+            bg-image('special_4')
+        .text
+          font-size: 12px
+          line-height:16px
+          color: rgb(7,17,27)
 </style>
