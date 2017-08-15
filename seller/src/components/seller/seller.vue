@@ -149,6 +149,8 @@
         padding: 16px 12px
         font-size: 0
         border-1px(rgba(7,17,27,0.1))
+        &:last-child
+          border-none()
         .icon // 规定背景图的一些通用样式
           display: inline-block
           vertical-align: top
