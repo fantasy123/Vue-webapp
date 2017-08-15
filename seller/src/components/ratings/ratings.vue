@@ -25,7 +25,7 @@
         </div>
       </div>
       <split></split>
-      <ratingselect :ratings="ratings" :selectType="selectType" :onlyContent="onlyContent" v-on:selectRatingType="setRatingType" v-on:toggleContent="setBoolContent"></ratingselect>
+      <ratingselect :ratings="ratings" :selectType="selectType" :onlyContent="onlyContent" v-on:selectRatingType="setRatingType" v-on:toggleContent="setBoolContent" v-on:on-select-type-change="onSelectTypeChange" v-on:on-only-content-change="onOnlyContentChange"></ratingselect>
       <!--可以先用data里维护的假数据填充-->
       <div class="rating-wrapper">
         <ul>
@@ -120,7 +120,15 @@
         this.$nextTick(() => {
           this.scroll.refresh();
         });
+      },
+      onSelectTypeChange: function (val) {
+        this.selectType = val;  // 外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
+      },
+      onOnlyContentChange: function (val) {
+        this.onlyContent = val;
       }
+      // 要尽可能的少用双向绑定，过于复杂的数据处理建议使用Vuex
+      // 使用双向绑定的条件: 组件内部需要修改props 组件需要可以由外部在运行时动态控制，而非单纯初始化 组件外部需要读取组件内的状态来进行处理
     },
     filters: {
       formatDate: function (time) {

@@ -49,12 +49,33 @@
               }
           }
       },
+      data: function () { // data中新增副本字段
+        return {
+          mySelectType: this.selectType,  // selectType不可写(防止子组件不小心修改了父组件的状态,使得应用数据流难以理解)
+          myOnlyContent: this.onlyContent // 所以创建一个副本 组件内所有对原值的操作改成对副本的操作
+        };
+      },
+      watch: {
+        selectType (val) {
+            this.mySelectType = val;  // 父组件修改props => 同步到该组件的props上(合法数据流) => 同步到data属性里的副本的修改上
+        },
+        mySelectType (val) {  // 通知到组件外
+            this.$emit('on-select-type-change', val);  // 组件内对mySelectType变更后向外部发送事件通知
+        },
+        onlyContent (val) {
+            this.myOnlyContent = val;
+        },
+        myOnlyContent (val) {
+            this.$emit('on-only-content-change', val);
+        }
+      },
       methods: {
         select: function (type, event) {
           if (!event._constructed) {
                 return;
           }
-          this.selectType = type; // Vue2中组件的props的数据流动改为了只能单向流动 在组件内，不能修改由外层传来的props数据
+          this.mySelectType = type; // 修改了副本
+          // Vue2中组件的props的数据流动改为了只能单向流动 在组件内，不能修改由外层传来的props数据
 
           this.$emit('selectRatingType', type); // 派发selectRatingType事件向父组件传递type
         },
@@ -62,7 +83,7 @@
           if (!event._constructed) {
             return;
           }
-          this.onlyContent = !this.onlyContent; // 基础类型的改变不会影响父组件 可以派发一个事件让父组件来监听
+          this.myOnlyContent = !this.onlyContent; // 基础类型的改变不会影响父组件 可以派发一个事件让父组件来监听
 
           this.$emit('toggleContent', this.onlyContent);  // 派发toggleContent事件向父组件传递this.onlyContent
         }
