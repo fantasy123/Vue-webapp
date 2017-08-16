@@ -36,14 +36,25 @@
         <div class="content-wrapper border-1px">
           <p class="content">{{seller.bulletin}}</p>
         </div>
+        <ul v-if="seller.supports" class="supports">
+          <li v-for="item in seller.supports" class="support-item border-1px">
+            <span class="icon" :class="classMap[item.type]"></span>
+            <!--item是对象数组seller.supports里的对象,第一个键type是索引。classMap是索引-类名数组,不同的类名对应不同的icon背景图-->
+            <span class="text">{{item.description}}</span>
+          </li>
+        </ul>
       </div>
-      <ul v-if="seller.supports" class="supports">
-        <li v-for="item in seller.supports" class="support-item border-1px">
-          <span class="icon" :class="classMap[item.type]"></span>
-          <!--item是对象数组seller.supports里的对象,第一个键type是索引。classMap是索引-类名数组,不同的类名对应不同的icon背景图-->
-          <span class="text">{{item.description}}</span>
-        </li>
-      </ul>
+      <split></split>
+      <div class="pics">
+        <h1 class="title">商家实景</h1>
+        <div class="pic-wrapper" ref="picWrapper">
+          <ul class="pic-list" ref="picList">
+            <li class="pic-item" v-for="pic in seller.pics">
+              <img :src="pic" width="120" height="90">
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -59,14 +70,29 @@
         type: Object
       }
     },
+    watch: {
+      'seller'() {  // seller是异步获取 后端请求到seller数据时 seller发生变化 调用_initScroll
+        this._initScroll(); // 只有刷新页面 请求后端数据的时候 seller才会改变 从其他tab切过来(替换router-view的DOM) seller数据并不会发生变化 BS不会被初始化
+      }
+    },
     created() {
       this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee']; // 索引-类名数组
-
-      this.$nextTick(() => {
-        this.scroll = new BScroll(this.$refs.seller, {
-          click: true
+    },
+    mounted () {  // 替换 vue 1.0 的ready函数,不能保证DOM渲染完成,所以仍需vm.$nextTick
+      this._initScroll(); // mouted在watch之前执行
+    },// 顺序是先DOM再数据(回调)
+    methods: {
+      _initScroll: function () {  // 抽象成一个方法
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this.scroll = new BScroll(this.$refs.seller, {
+              click: true
+            });
+          } else {
+            this.scroll.refresh();
+          }
         });
-      });
+      }
     },
     components: {
       star,
@@ -143,34 +169,53 @@
           line-height: 24px
           font-size: 12px
           color: rgb(240,20,20)
-    .supports
-      padding: 0 18px
-      .support-item
-        padding: 16px 12px
-        font-size: 0
-        border-1px(rgba(7,17,27,0.1))
-        &:last-child
-          border-none()
-        .icon // 规定背景图的一些通用样式
-          display: inline-block
-          vertical-align: top
-          width: 16px
-          height: 16px
-          margin-right: 6px
-          background-size:16px 16px
-          background-repeat:no-repeat
-          &.decrease  // 第二个类名决定具体的URL
-            bg-image('decrease_4')
-          &.discount
-            bg-image('discount_4')
-          &.guarantee
-            bg-image('guarantee_4')
-          &.invoice
-            bg-image('invoice_4')
-          &.special
-            bg-image('special_4')
-        .text
-          font-size: 12px
-          line-height:16px
-          color: rgb(7,17,27)
+      .supports
+        .support-item
+          padding: 16px 12px
+          font-size: 0
+          border-1px(rgba(7,17,27,0.1))
+          &:last-child
+            border-none()
+          .icon // 规定背景图的一些通用样式
+            display: inline-block
+            vertical-align: top
+            width: 16px
+            height: 16px
+            margin-right: 6px
+            background-size:16px 16px
+            background-repeat:no-repeat
+            &.decrease  // 第二个类名决定具体的URL
+              bg-image('decrease_4')
+            &.discount
+              bg-image('discount_4')
+            &.guarantee
+              bg-image('guarantee_4')
+            &.invoice
+              bg-image('invoice_4')
+            &.special
+              bg-image('special_4')
+          .text
+            font-size: 12px
+            line-height:16px
+            color: rgb(7,17,27)
+    .pics
+      padding: 18px
+      .title
+        font-size: 14px
+        margin-bottom: 12px
+        line-height: 14px
+        color: rgb(7,17,27)
+      .pic-wrapper
+        width: 100%
+        overflow: hidden
+        white-space: nowrap // 图片不会折行
+        .pic-list
+          font-size: 0
+          .pic-item
+            display: inline-block
+            margin-right: 6px
+            width: 120px
+            height: 90px
+            &:last-child
+              margin-right: 0
 </style>
