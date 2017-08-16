@@ -49,6 +49,7 @@
         <h1 class="title">商家实景</h1>
         <div class="pic-wrapper" ref="picWrapper">
           <ul class="pic-list" ref="picList">
+            <!--ul超出pic-wrapper宽度才会滚动-->
             <li class="pic-item" v-for="pic in seller.pics">
               <img :src="pic" width="120" height="90">
             </li>
@@ -70,9 +71,10 @@
         type: Object
       }
     },
-    watch: {
+    watch: {  // 页面刷新对应watch seller(异步获取) tab切换对应mounted重新准备DOM 在这两个hook里面都要调用_initScroll
       'seller'() {  // seller是异步获取 后端请求到seller数据时 seller发生变化 调用_initScroll
         this._initScroll(); // 只有刷新页面 请求后端数据的时候 seller才会改变 从其他tab切过来(替换router-view的DOM) seller数据并不会发生变化 BS不会被初始化
+        this._initPicScroll();
       }
     },
     created() {
@@ -80,7 +82,10 @@
     },
     mounted () {  // 替换 vue 1.0 的ready函数,不能保证DOM渲染完成,所以仍需vm.$nextTick
       this._initScroll(); // mouted在watch之前执行
-    },// 顺序是先DOM再数据(回调)
+
+      // 默认ul宽度和外层pic-wrapper是一样的 我们需要手动去设置ul的宽度 使他超出外层
+      this._initPicScroll();
+    }, // 顺序是先DOM再数据(回调)
     methods: {
       _initScroll: function () {  // 抽象成一个方法
         this.$nextTick(() => {
@@ -92,6 +97,26 @@
             this.scroll.refresh();
           }
         });
+      },
+      _initPicScroll: function () {
+        if (this.seller.pics) { // seller是异步获取 所以pics不一定有值 需要在watch这个hook里写一遍
+          let picWidth = 120;
+          let margin = 6;
+          let width = this.seller.pics.length * (picWidth + margin) - margin; // 计算ul宽度
+          this.$refs.picList.style.width = width + 'px';  // 设置ul宽度 超出wrapper
+
+          // 初始化better-scroll
+          this.$nextTick(() => {
+            if (!this.picScroll) {
+              this.picScroll = new BScroll(this.$refs.picWrapper, {
+                scrollX: true,
+                eventPassthrough: 'vertical'  // 忽略纵向滚动
+              });
+            } else {
+              this.picScroll.refresh();
+            }
+          });
+        }
       }
     },
     components: {
