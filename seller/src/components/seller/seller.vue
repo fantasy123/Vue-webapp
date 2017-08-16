@@ -29,6 +29,10 @@
             </div>
           </li>
         </ul>
+        <div class="favorite" @click="toggleFavorite($event)">
+          <span class="icon-favorite" :class="{'active': favorite}"></span>
+          <span class="text">{{favoriteText}}</span>
+        </div>
       </div>
       <split></split>
       <div class="bulletin">
@@ -71,12 +75,20 @@
   import star from 'components/star/star';
   import split from 'components/split/split';
   import BScroll from 'better-scroll';
+  import {saveToLocal, loadFromLocal} from 'common/js/store';
 
   export default {
     props: {
       seller: { // 从router-view接收过来
         type: Object
       }
+    },
+    data() {
+      return {
+        favorite: (() => {
+          return loadFromLocal(this.seller.id, 'favorite', false);
+        })() // 这里不能写死 要从本地缓存里去读
+      };
     },
     watch: {  // 页面刷新对应watch seller(异步获取) tab切换对应mounted重新准备DOM 在这两个hook里面都要调用_initScroll
       'seller'() {  // seller是异步获取 后端请求到seller数据时 seller发生变化 调用_initScroll
@@ -93,6 +105,11 @@
       // 默认ul宽度和外层pic-wrapper是一样的 我们需要手动去设置ul的宽度 使他超出外层
       this._initPicScroll();
     }, // 顺序是先DOM再数据(回调)
+    computed: {
+      favoriteText(ev) {
+          return this.favorite ? '已收藏' : '收藏';
+      }
+    },
     methods: {
       _initScroll: function () {  // 抽象成一个方法
         this.$nextTick(() => {
@@ -124,6 +141,16 @@
             }
           });
         }
+      },
+      toggleFavorite: function (ev) {
+        if (!ev._constructed) {
+          return;
+        }
+
+        this.favorite = !this.favorite;
+        // 点选收藏按钮的时候 当前的favorite缓存到localStrorage里
+        // 不能直接localStorage.favotite = this.favorite 因为要关联商家id(App.vue组件传下来)
+        saveToLocal(this.seller.id, 'favorite', this.favorite); // 无论是false或是true 都会存到localStorage里 以供读取
       }
     },
     components: {
@@ -143,6 +170,7 @@
     bottom: 0
     overflow: hidden
     .overview
+      position: relative
       padding: 18px
       .title
         font-size: 14px
@@ -187,6 +215,24 @@
               font-size: 24px
           &:last-child
             border-right:none
+      .favorite
+        position: absolute
+        right: 11px
+        top: 18px
+        width: 50px
+        text-align: center
+        .icon-favorite
+          display: block
+          margin-bottom: 4px
+          font-size: 24px
+          line-height: 24px
+          color: #d4d6d9
+          &.active
+            color: rgb(240,20,20)
+        .text
+          font-size: 10px
+          line-height: 10px
+          color: rgb(77,85,93)
     .bulletin
       padding: 18px 18px 0 18px
       .title
