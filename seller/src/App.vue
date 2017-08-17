@@ -14,7 +14,12 @@
     </div>
 
     <!--路由外链-->
-    <router-view :seller="seller" keep-alive></router-view>
+    <keep-alive>
+      <!--keep-alive的作用是切换tab的时候 DOM不会重新渲染 BS也不用重新初始化 mounted hook里的逻辑不会被执行-->
+      <router-view :seller="seller" keep-alive></router-view>
+      <!--原理是把组件状态保存在内存里 必要的时候恢复-->
+      <!--每次切换tab,created都会被执行一遍,Vue的生命周期也会重新进行一遍,组件里的状态不能被保存-->
+    </keep-alive>
   </div>
 </template>
 

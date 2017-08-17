@@ -104,7 +104,7 @@
 
       // 默认ul宽度和外层pic-wrapper是一样的 我们需要手动去设置ul的宽度 使他超出外层
       this._initPicScroll();
-    }, // 顺序是先DOM再数据(回调)
+    }, // 切换tab的时候 没有刷新页面 watch钩子不会被执行 无法初始化scroll 所以监听mounted钩子 在准备DOM的时候再初始化一次Scroll
     computed: {
       favoriteText(ev) {
           return this.favorite ? '已收藏' : '收藏';
